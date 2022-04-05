@@ -145,7 +145,7 @@ async function addEmployee() {
             message: 'Please select one of the employees below:',
             choices: () => {
                 let temp = []
-                for (item of employees) { temp.push(`${item[1]} ${item[2]}`) }
+                for (item of employees) { temp.push(`${item[1]} ${item[2]} ${chalk.red("| "+item[3])}`) }
                 return temp;
             }
         })
@@ -155,7 +155,25 @@ async function addEmployee() {
 }
 
 async function updateEmployee() {
-
+    const employees = await s.pullEmployees()
+    const {employee, options} = await inquirer.prompt([
+        {
+            type: 'list',
+            name: 'employee',
+            message: 'Please select one of the employees below:',
+            choices: () => {
+                let temp = []
+                for (item of employees) { temp.push(`${item[1]} ${item[2]}`) }
+                return temp;
+            }
+        },
+        {
+            type: 'checkbox',
+            name: 'options',
+            message: 'Please select what you would like to update: ',
+            choices: [{name: 'Role', value: 'changeRole'}, {name: 'Manager', value: 'changeManager'}]
+        }
+    ])
 }
 
 module.exports = {introHolder, menuOptions, viewDepartments, viewRoles, viewEmployees, addDepartment, addRole, addEmployee, updateEmployee}
