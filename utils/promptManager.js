@@ -181,7 +181,7 @@ async function addEmployee() {
             message: 'Please select one of the employees below:',
             choices: () => {
                 let temp = []
-                for (item of employees) { temp.push( {name: `${item[1]} ${item[2]} ${chalk.red("| "+item[3])}`, value: `${item[1]} ${item[2]}`}) }
+                for (item of employees) { temp.push( {name: `${item[1]} ${item[2]} ${chalk.red('| '+item[3])}`, value: `${item[1]} ${item[2]}`}) }
                 return temp;
             }
         })
@@ -201,7 +201,7 @@ async function updateEmployee() {
             choices: () => {
                 let temp = []
                 for (item of employees) {
-                    temp.push( {name: `${item[1]} ${item[2]}`, value: JSON.stringify({"emp_id":item[0], "current_manager_name":item[6],"current_role_name":item[3]})} )
+                    temp.push( {name: `${item[1]} ${item[2]}`, value: JSON.stringify({'emp_id':item[0], 'employee_name': `${item[1]} ${item[2]}`, 'current_manager_name':item[6],'current_role_name':item[3]})} )
                 }
                 return temp;
             }
@@ -213,10 +213,10 @@ async function updateEmployee() {
             choices: [{name: 'Role', value: 'changeRole', checked: true}, {name: 'Manager', value: 'changeManager', checked: true}]
         }
     ])
-    const {emp_id, current_manager_name, current_role_name} = JSON.parse(employee)
+    const {emp_id, employee_name, current_manager_name, current_role_name} = JSON.parse(employee)
     if (options.includes('changeRole') || options.includes('changeManager')) {
         const new_role_id = await (options.includes('changeRole') ? updateEmpRole() : updateEmpRole(current_role_name))
-        const new_manager_name = await (options.includes('changeManager') ? updateEmpManager(employees) : current_manager_name)
+        const new_manager_name = await (options.includes('changeManager') ? updateEmpManager(employees, employee_name) : current_manager_name)
         await sql.updateEmployee(emp_id, new_role_id, new_manager_name)
     }
     (await willRedisplay('Employees')) && await viewEmployees()
@@ -240,7 +240,7 @@ async function updateEmpRole(current_role_name=null) {
     })()
 }
 
-async function updateEmpManager(employees) {
+async function updateEmpManager(employees, exclude) {
     const {new_manager} = await inquirer.prompt({
         type: 'list',
         name: 'new_manager',
@@ -248,7 +248,7 @@ async function updateEmpManager(employees) {
         choices: () => {
             let temp = []
             for (item of employees) {
-                temp.push({name: `${item[1]} ${item[2]} ${chalk.red("| "+item[3])}`,value: `${item[1]} ${item[2]}`})
+                (`${item[1]} ${item[2]}` === exclude) || temp.push({name: `${item[1]} ${item[2]} ${chalk.red('| '+item[3])}`,value: `${item[1]} ${item[2]}`})
             }
             return temp;
         }
