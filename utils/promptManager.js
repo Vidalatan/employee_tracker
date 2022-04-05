@@ -19,13 +19,47 @@ async function menuOptions() {
         message: 'What would you like to do?',
         choices: 
         [
+            {value: 'view', name: 'View'},
+            {value: 'add', name: 'Add'},
+            {value: 'uemp', name: 'Update Employee'}
+        ]
+    })
+    switch (option) {
+        case 'view':
+            return await selectView()
+        case 'add':
+            return await selectAdd()
+        case 'uemp':
+            return 'uemp'
+    }
+    
+}
+
+async function selectView() {
+    const {option} = await inquirer.prompt({
+        type: 'list',
+        name: 'option',
+        message: 'What would you like to view? ',
+        choices: 
+        [
             {value: 'vdep', name: 'View Departments'},
             {value: 'vrol', name: 'View Roles'},
-            {value: 'vemp', name: 'View Employees'},
+            {value: 'vemp', name: 'View Employees'}
+        ]
+    })
+    return option
+}
+
+async function selectAdd() {
+    const {option} = await inquirer.prompt({
+        type: 'list',
+        name: 'option',
+        message: 'What would you like to add? ',
+        choices: 
+        [
             {value: 'adep', name: 'Add Department'},
             {value: 'arol', name: 'Add Role'},
             {value: 'aemp', name: 'Add Employee'},
-            {value: 'uemp', name: 'Update Employee'}
         ]
     })
     return option
