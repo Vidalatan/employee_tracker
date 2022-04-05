@@ -8,13 +8,18 @@ function readSQL(filePath) {
 
 async function sendQuery(fileName, options=null) {
     if (options) {
+        let rows, fields;
         switch (options['type']) {
             case 'add_department':
-                let [rows, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`).replace('$<DEPARTMENT>', options['department_name']));
+                [rows, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`).replace('$<DEPARTMENT>', options['department_name']));
                 return rows
-            case 'department':
-                
-                break;
+            case 'add_role':
+                [rows, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`)
+                .replace('$<TITLE>', options['title'])
+                .replace('$<SALARY>', options['salary'])
+                .replace('$<DEPARTMENT_ID>', options['department_id'])
+                );
+                return rows
             case 'department':
                 
                 break;
@@ -66,4 +71,8 @@ async function addDepartment(department_name) {
     const data = await sendQuery('addDepartment', {'type': 'add_department', 'department_name': department_name})
 }
 
-module.exports = {pullDepartments, pullRoles, pullEmployees, addDepartment}
+async function addRole(title, salary, department_id) {
+    const data = await sendQuery('addRole', {'type': 'add_role', 'title': title, 'salary': salary, 'department_id': department_id})
+}
+
+module.exports = {pullDepartments, pullRoles, pullEmployees, addDepartment, addRole}

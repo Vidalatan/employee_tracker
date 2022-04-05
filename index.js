@@ -26,7 +26,7 @@ async function init() {
                 await promptManager.addRole()
                 break;
             case 'aemp':
-                await promptManager.addEmployee()
+                // await promptManager.addEmployee()
                 break;
             case 'uemp':
                 

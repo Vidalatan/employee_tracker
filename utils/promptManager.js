@@ -77,11 +77,35 @@ async function addDepartment() {
             message: 'What is the new department name? '
         })
     await s.addDepartment(department_name);
-    (await willRedisplay('Department')) ? await viewDepartments() : await pressAnyKey('Please press any key to continue\n')
+    (await willRedisplay('Department')) && await viewDepartments()
 }
 
 async function addRole() {
-
+    const departments = await s.pullDepartments()
+    const {title, salary, department_id} = await inquirer.prompt([
+        {
+            type: 'input',
+            name: 'title',
+            message: 'What is the new role name? '
+        },
+        {
+            type: 'number',
+            name: 'salary',
+            message: 'What is this role\'s salary? ',
+        },
+        {
+            type: 'list',
+            name: 'department_id',
+            message: 'What department does this role belong to? ',
+            choices: () => {
+                let temp = []
+                for (item of departments) { temp.push({value: item[0], name: item[1]}) }
+                return temp;
+            }
+        }
+    ])
+    await s.addRole(title, salary, department_id);
+    (await willRedisplay('Role')) && await viewRoles()
 }
 
 async function addEmployee() {
