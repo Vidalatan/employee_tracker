@@ -97,11 +97,12 @@ encouraged to assist in any way applicable to your skills!
 
 Below is a quick demonstration of the basic usage of the application:
 
-![]()
+https://user-images.githubusercontent.com/59946423/161856653-2afaa1e2-4c65-4cda-bf87-a181d623bed7.mp4
 
 There were also tests done to make sure that deleting departments or roles were restricted depending on if there was anything assigned to them:
 
-![]()
+https://user-images.githubusercontent.com/59946423/161856454-e4b7aff6-1102-4cd0-a2d2-5fc526294f8f.mp4
+
 
 ## [Questions](#questions)
 
