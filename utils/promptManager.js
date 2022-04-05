@@ -147,7 +147,7 @@ async function addEmployee() {
             message: 'Please select one of the employees below:',
             choices: () => {
                 let temp = []
-                for (item of employees) { temp.push(`${item[1]} ${item[2]} ${chalk.red("| "+item[3])}`) }
+                for (item of employees) { temp.push( {name: `${item[1]} ${item[2]} ${chalk.red("| "+item[3])}`, value: `${item[1]} ${item[2]}`}) }
                 return temp;
             }
         })
@@ -214,7 +214,7 @@ async function updateEmpManager(employees) {
         choices: () => {
             let temp = []
             for (item of employees) {
-                temp.push(`${item[1]} ${item[2]}`)
+                temp.push({name: `${item[1]} ${item[2]} ${chalk.red("| "+item[3])}`,value: `${item[1]} ${item[2]}`})
             }
             return temp;
         }
