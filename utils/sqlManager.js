@@ -25,7 +25,7 @@ async function sendQuery(fileName, options=null) {
                 .replace('$<FIRSTNAME>', options['first_name'])
                 .replace('$<LASTNAME>', options['last_name'])
                 .replace('$<ROLE_ID>', options['role_id'])
-                .replace('$<MANAGERNAME>', options['manager_name'])
+                .replace(options['manager_name'] ? '$<MANAGERNAME>' : `'$<MANAGERNAME>'`, options['manager_name'])
                 );
                 return rows
             case 'department':

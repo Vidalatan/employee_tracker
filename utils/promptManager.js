@@ -140,7 +140,7 @@ async function addEmployee() {
     if (hasManager) {
         const employees = await s.pullEmployees()
         const {manager_name} = await inquirer.prompt({
-            type: 'input',
+            type: 'list',
             name: 'manager_name',
             message: 'Please select one of the employees below:',
             choices: () => {
