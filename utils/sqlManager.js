@@ -38,6 +38,15 @@ async function sendQuery(fileName, options=null) {
                 } catch (error) {
                     return null
                 }
+            case 'del_role':
+                try {
+                    [data, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`)
+                    .replace('$<ROLE_ID>', options['role_id'])
+                    );
+                    return data
+                } catch (error) {
+                    return null
+                }
             case 'del_employee':
                 [data, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`)
                 .replace('$<EMP_ID>', options['emp_id'])
@@ -110,8 +119,12 @@ async function delDepartment(dept_id) {
     }
 }
 
-async function delRole() {
-    // const data = await sendQuery('delRole', {'type': 'del_role', %})
+async function delRole(role_id) {
+    const data = await sendQuery('delRole', {'type': 'del_role', 'role_id': role_id})
+    if (data === null) {
+        console.log(chalk.redBright('CANNOT DELETE ROLE\n') + 
+        chalk.yellow("There are employees assigned to this role still.\nYou must first update/remove anyone assigned to this role"));
+    }
 }
 
 async function delEmployee(emp_id) {

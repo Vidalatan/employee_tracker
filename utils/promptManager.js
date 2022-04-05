@@ -221,12 +221,11 @@ async function delDepartment() {
             return temp;
         }
     })
-    console.log(department);
     const {dept_id, department_name} = JSON.parse(department)
     const {willDelete} = await inquirer.prompt({
         type: 'confirm',
         name: 'willDelete',
-        message: `Are you sure you wish to delete ${department_name}? (This is permanent) `
+        message: `Are you sure you wish to delete ${department_name}? ${chalk.redBright('(This is permanent)')} `
     })
     if (willDelete) {
         await sql.delDepartment(dept_id)
@@ -237,6 +236,27 @@ async function delDepartment() {
 
 async function delRole() {
     const roles = await sql.pullRoles()
+    const {role} = await inquirer.prompt({
+            type: 'list',
+            name: 'role',
+            message: 'What role does this employee have? ',
+            choices: () => {
+                let temp = []
+                for (item of roles) { temp.push({value: JSON.stringify({'role_id': item[1], 'role_name': item[0]}), name: item[0]}) }
+                return temp;
+            }
+    })
+    const {role_id, role_name} = JSON.parse(role)
+    const {willDelete} = await inquirer.prompt({
+        type: 'confirm',
+        name: 'willDelete',
+        message: `Are you sure you wish to delete ${role_name}? ${chalk.redBright('(This is permanent)')} `
+    })
+    if (willDelete) {
+        await sql.delRole(role_id)
+    }
+    (await willRedisplay('Role')) && await viewRoles()
+    console.clear();
 }
 
 async function delEmployee() {
@@ -257,7 +277,7 @@ async function delEmployee() {
     const {willDelete} = await inquirer.prompt({
         type: 'confirm',
         name: 'willDelete',
-        message: `Are you sure you wish to delete ${employee_name}? (This is permanent) `
+        message: `Are you sure you wish to delete ${employee_name}? ${chalk.redBright('(This is permanent)')} `
     })
     if (willDelete) {
         await sql.delEmployee(emp_id)
