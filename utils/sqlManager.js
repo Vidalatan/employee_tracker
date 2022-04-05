@@ -6,9 +6,26 @@ function readSQL(filePath) {
     return statement
 }
 
-async function sendQuery(fileName) {
-    let [rows, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`));
-    return rows
+async function sendQuery(fileName, options=null) {
+    if (options) {
+        switch (options['type']) {
+            case 'add_department':
+                let [rows, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`).replace('$<DEPARTMENT>', options['department_name']));
+                return rows
+            case 'department':
+                
+                break;
+            case 'department':
+                
+                break;
+            case 'department':
+                
+                break;
+        }
+    } else {
+        let [rows, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`));
+        return rows
+    }
 }
 
 const db = mysql.createConnection(
@@ -45,4 +62,8 @@ async function pullEmployees() {
     return data;
 }
 
-module.exports = {pullDepartments, pullRoles, pullEmployees}
+async function addDepartment(department_name) {
+    const data = await sendQuery('addDepartment', {'type': 'add_department', 'department_name': department_name})
+}
+
+module.exports = {pullDepartments, pullRoles, pullEmployees, addDepartment}

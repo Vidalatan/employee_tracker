@@ -31,23 +31,53 @@ async function menuOptions() {
     return option
 }
 
+async function willRedisplay(newThing) {
+    const {willRedisplay} = await inquirer.prompt({
+        type: 'confirm',
+        name: 'willRedisplay',
+        message: `Do you wish to display the table containing your new ${newThing}`
+    })
+    return willRedisplay
+}
+
 async function viewDepartments() {
     console.table([chalk.yellow('Department ID'), chalk.yellow('Departments')], await s.pullDepartments())
     return await pressAnyKey('Please press any key to continue\n')
 }
 
 async function viewRoles() {
-    console.table([chalk.blueBright('Role'), chalk.blueBright('Role ID'), chalk.yellow('Department'), chalk.green('Salary'), chalk.yellow('Departments')], await s.pullRoles())
+    console.table(
+        [
+            chalk.blueBright('Role'),
+            chalk.blueBright('Role ID'),
+            chalk.yellow('Department'),
+            chalk.green('Salary'),
+        ], await s.pullRoles())
     return await pressAnyKey('Please press any key to continue\n')
 }
 
 async function viewEmployees() {
-    console.table(await s.pullEmployees())
+    console.table(
+        [
+            chalk.magenta('Employee ID'),
+            chalk.magenta('First Name'),
+            chalk.magenta('Last Name'),
+            chalk.blueBright('Role'),
+            chalk.yellow('Department'),
+            chalk.green('Salary'),
+            chalk.red('Direct Manager'),
+        ],await s.pullEmployees())
     return await pressAnyKey('Please press any key to continue\n')
 }
 
 async function addDepartment() {
-
+    const {department_name} = await inquirer.prompt({
+            type: 'input',
+            name: 'department_name',
+            message: 'What is the new department name? '
+        })
+    await s.addDepartment(department_name);
+    (await willRedisplay('Department')) ? await viewDepartments() : await pressAnyKey('Please press any key to continue\n')
 }
 
 async function addRole() {

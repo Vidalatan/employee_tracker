@@ -20,13 +20,13 @@ async function init() {
                 await promptManager.viewEmployees()
                 break;
             case 'adep':
-                
+                await promptManager.addDepartment()
                 break;
             case 'arol':
-                
+                await promptManager.addRole()
                 break;
             case 'aemp':
-                
+                await promptManager.addEmployee()
                 break;
             case 'uemp':
                 
