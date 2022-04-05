@@ -87,7 +87,7 @@ async function willRedisplay(newThing) {
     const {willRedisplay} = await inquirer.prompt({
         type: 'confirm',
         name: 'willRedisplay',
-        message: `Do you wish to display the table containing your new ${newThing}`
+        message: `Do you wish to display the table containing your ${newThing}`
     })
     return willRedisplay
 }
@@ -210,11 +210,33 @@ async function addEmployee() {
 }
 
 async function delDepartment() {
-    
+    const departments = await sql.pullDepartments()
+    const {department} = await inquirer.prompt({
+        type: 'list',
+        name: 'department',
+        message: 'What department do you wish to delete? ',
+        choices: () => {
+            let temp = []
+            for (item of departments) { temp.push({value: JSON.stringify( {'dept_id': item[0], 'department_name': item[1]} ), name: item[1]}) }
+            return temp;
+        }
+    })
+    console.log(department);
+    const {dept_id, department_name} = JSON.parse(department)
+    const {willDelete} = await inquirer.prompt({
+        type: 'confirm',
+        name: 'willDelete',
+        message: `Are you sure you wish to delete ${department_name}? (This is permanent) `
+    })
+    if (willDelete) {
+        await sql.delDepartment(dept_id)
+    }
+    (await willRedisplay('Department')) && await viewDepartments()
+    console.clear();
 }
 
 async function delRole() {
-
+    const roles = await sql.pullRoles()
 }
 
 async function delEmployee() {

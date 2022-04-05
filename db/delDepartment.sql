@@ -1,0 +1,1 @@
+DELETE FROM departments WHERE dept_id = '$<DEPT_ID>';

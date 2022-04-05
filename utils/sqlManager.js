@@ -1,4 +1,5 @@
 const mysql = require('mysql2');
+const chalk = require('chalk');
 const fs = require('fs');
 
 function readSQL(filePath) {
@@ -28,6 +29,15 @@ async function sendQuery(fileName, options=null) {
                 .replace(options['manager_name'] ? '$<MANAGERNAME>' : `'$<MANAGERNAME>'`, options['manager_name'])
                 );
                 return data
+            case 'del_department':
+                try {
+                    [data, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`)
+                    .replace('$<DEPT_ID>', options['dept_id'])
+                    );
+                    return data
+                } catch (error) {
+                    return null
+                }
             case 'del_employee':
                 [data, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`)
                 .replace('$<EMP_ID>', options['emp_id'])
@@ -92,8 +102,12 @@ async function addEmployee(first_name, last_name, role_id, manager_name=null) {
     const data = await sendQuery('addEmployee', {'type': 'add_employee', 'first_name': first_name, 'last_name': last_name, 'role_id': role_id, 'manager_name': manager_name})
 }
 
-async function delDepartment() {
-    // const data = await sendQuery('delDepartment', {'type': 'del_department', %})
+async function delDepartment(dept_id) {
+    const data = await sendQuery('delDepartment', {'type': 'del_department', 'dept_id': dept_id})
+    if (data === null) {
+        console.log(chalk.redBright('CANNOT DELETE DEPARTMENT\n') + 
+        chalk.yellow("There are roles, or employees assigned to this department\nYou must first update/remove anything assigned to this department"));
+    }
 }
 
 async function delRole() {
