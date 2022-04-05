@@ -28,9 +28,13 @@ async function sendQuery(fileName, options=null) {
                 .replace(options['manager_name'] ? '$<MANAGERNAME>' : `'$<MANAGERNAME>'`, options['manager_name'])
                 );
                 return rows
-            case 'department':
-                
-                break;
+            case 'update_employee':
+                [rows, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`)
+                .replace('$<EMP_ID>', options['emp_id'])
+                .replace('$<ROLE_ID>', options['role_id'])
+                .replace(options['manager_name'] ? '$<MANAGERNAME>' : `'$<MANAGERNAME>'`, options['manager_name'])
+                )
+
         }
     } else {
         let [rows, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`));
@@ -45,8 +49,7 @@ const db = mysql.createConnection(
       password: process.env.DB_PASSWORD,
       rowsAsArray: true,
       multipleStatements: true
-    },
-    console.log(`Connected to DB`)
+    }
   );
   
 db.connect(function(err) {
@@ -84,4 +87,8 @@ async function addEmployee(first_name, last_name, role_id, manager_name=null) {
     const data = await sendQuery('addEmployee', {'type': 'add_employee', 'first_name': first_name, 'last_name': last_name, 'role_id': role_id, 'manager_name': manager_name})
 }
 
-module.exports = {pullDepartments, pullRoles, pullEmployees, addDepartment, addRole, addEmployee}
+async function updateEmployee(emp_id, role_id, manager_name) {
+    const data = await sendQuery('updateEmployee', {'type': 'update_employee', 'emp_id': emp_id, 'role_id': role_id, 'manager_name': manager_name})
+}
+
+module.exports = {pullDepartments, pullRoles, pullEmployees, addDepartment, addRole, addEmployee, updateEmployee}

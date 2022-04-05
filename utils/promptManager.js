@@ -2,14 +2,14 @@ const inquirer = require('inquirer');
 const chalk = require('chalk');
 const pressAnyKey = require('press-any-key');
 const cTable = require('console.table');
-const s = require('./sqlManager')
+const sql = require('./sqlManager')
 
 async function introHolder() {
     console.log(chalk.green(
         '','=========================================\n',
         '| Welcome to the Employee Tracking App! |\n',
         '=========================================\n'));
-    return await pressAnyKey('Please press any key to start\n')
+    return await pressAnyKey('      Please press any key to start\n(Or \'ctrl+c\' to exit the app at any time)')
 }
 
 async function menuOptions() {
@@ -41,7 +41,7 @@ async function willRedisplay(newThing) {
 }
 
 async function viewDepartments() {
-    console.table([chalk.yellow('Department ID'), chalk.yellow('Departments')], await s.pullDepartments())
+    console.table([chalk.yellow('Department ID'), chalk.yellow('Departments')], await sql.pullDepartments())
     return await pressAnyKey('Please press any key to continue\n')
 }
 
@@ -52,7 +52,7 @@ async function viewRoles() {
             chalk.blueBright('Role ID'),
             chalk.yellow('Department'),
             chalk.green('Salary'),
-        ], await s.pullRoles())
+        ], await sql.pullRoles())
     return await pressAnyKey('Please press any key to continue\n')
 }
 
@@ -66,7 +66,7 @@ async function viewEmployees() {
             chalk.yellow('Department'),
             chalk.green('Salary'),
             chalk.red('Direct Manager'),
-        ],await s.pullEmployees())
+        ],await sql.pullEmployees())
     return await pressAnyKey('Please press any key to continue\n')
 }
 
@@ -76,12 +76,13 @@ async function addDepartment() {
             name: 'department_name',
             message: 'What is the new department name? '
         })
-    await s.addDepartment(department_name);
+    await sql.addDepartment(department_name);
     (await willRedisplay('Department')) && await viewDepartments()
+    console.clear();
 }
 
 async function addRole() {
-    const departments = await s.pullDepartments()
+    const departments = await sql.pullDepartments()
     const {title, salary, department_id} = await inquirer.prompt([
         {
             type: 'input',
@@ -104,12 +105,13 @@ async function addRole() {
             }
         }
     ])
-    await s.addRole(title, salary, department_id);
+    await sql.addRole(title, salary, department_id);
     (await willRedisplay('Role')) && await viewRoles()
+    console.clear();
 }
 
 async function addEmployee() {
-    const roles = await s.pullRoles()
+    const roles = await sql.pullRoles()
     const {first_name, last_name, role_id} = await inquirer.prompt([
         {
             type: 'input',
@@ -138,7 +140,7 @@ async function addEmployee() {
         message: 'Does this employee have a manager? '
     })
     if (hasManager) {
-        const employees = await s.pullEmployees()
+        const employees = await sql.pullEmployees()
         const {manager_name} = await inquirer.prompt({
             type: 'list',
             name: 'manager_name',
@@ -149,13 +151,14 @@ async function addEmployee() {
                 return temp;
             }
         })
-        await s.addEmployee(first_name, last_name, role_id, manager_name);
-    } else { await s.addEmployee(first_name, last_name, role_id); }
+        await sql.addEmployee(first_name, last_name, role_id, manager_name);
+    } else { await sql.addEmployee(first_name, last_name, role_id); }
     (await willRedisplay('Employee')) && await viewEmployees()
+    console.clear();
 }
 
 async function updateEmployee() {
-    const employees = await s.pullEmployees()
+    const employees = await sql.pullEmployees()
     const {employee, options} = await inquirer.prompt([
         {
             type: 'list',
@@ -163,7 +166,9 @@ async function updateEmployee() {
             message: 'Please select one of the employees below:',
             choices: () => {
                 let temp = []
-                for (item of employees) { temp.push(`${item[1]} ${item[2]}`) }
+                for (item of employees) {
+                    temp.push( {name: `${item[1]} ${item[2]}`, value: JSON.stringify({"emp_id":item[0], "current_manager_name":item[6],"current_role_name":item[3]})} )
+                }
                 return temp;
             }
         },
@@ -171,9 +176,50 @@ async function updateEmployee() {
             type: 'checkbox',
             name: 'options',
             message: 'Please select what you would like to update: ',
-            choices: [{name: 'Role', value: 'changeRole'}, {name: 'Manager', value: 'changeManager'}]
+            choices: [{name: 'Role', value: 'changeRole', checked: true}, {name: 'Manager', value: 'changeManager', checked: true}]
         }
     ])
+    const {emp_id, current_manager_name, current_role_name} = JSON.parse(employee)
+    if (options.includes('changeRole') || options.includes('changeManager')) {
+        const new_role_id = await (options.includes('changeRole') ? updateEmpRole() : updateEmpRole(current_role_name))
+        const new_manager_name = await (options.includes('changeManager') ? updateEmpManager(employees) : current_manager_name)
+        await sql.updateEmployee(emp_id, new_role_id, new_manager_name)
+    }
+    (await willRedisplay('Employees')) && await viewEmployees()
+    console.clear();
+}
+
+async function updateEmpRole(current_role_name=null) {
+    const roles = (await sql.pullRoles()).map(item => [item[0], item[1]])
+    return current_role_name ? (() => {
+        for (item of roles) {
+            if (item[0] === current_role_name) { return item[1] }
+        }
+    })() : (async () => {
+        const {new_role} = await inquirer.prompt({
+            type: 'list',
+            name: 'new_role',
+            message: 'What is the employee\'s new role? ',
+            choices: () => { return roles.map(item => { return { name: item[0], value: item[1]} })}
+        })
+        return new_role
+    })()
+}
+
+async function updateEmpManager(employees) {
+    const {new_manager} = await inquirer.prompt({
+        type: 'list',
+        name: 'new_manager',
+        message: 'Please select one of the below to assign as the new manager:',
+        choices: () => {
+            let temp = []
+            for (item of employees) {
+                temp.push(`${item[1]} ${item[2]}`)
+            }
+            return temp;
+        }
+    })
+    return new_manager
 }
 
 module.exports = {introHolder, menuOptions, viewDepartments, viewRoles, viewEmployees, addDepartment, addRole, addEmployee, updateEmployee}

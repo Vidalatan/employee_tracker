@@ -3,12 +3,10 @@ const chalk = require('chalk')
 const promptManager = require('./utils/promptManager')
 
 async function init() {
-    const clear = console.clear
     const _ = await promptManager.introHolder();
-    clear();
     while (true) {
         let option = await promptManager.menuOptions();
-        clear();
+        console.clear()
         switch (option) {
             case 'vdep':
                 await promptManager.viewDepartments();
@@ -29,7 +27,7 @@ async function init() {
                 await promptManager.addEmployee()
                 break;
             case 'uemp':
-                
+                await promptManager.updateEmployee()
                 break;
         }
     }
