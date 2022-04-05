@@ -41,7 +41,8 @@ async function pullRoles() {
 }
 
 async function pullEmployees() {
-
+    const data = await sendQuery('pullEmployees');
+    return data;
 }
 
 module.exports = {pullDepartments, pullRoles, pullEmployees}

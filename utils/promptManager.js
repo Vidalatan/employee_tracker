@@ -32,12 +32,12 @@ async function menuOptions() {
 }
 
 async function viewDepartments() {
-    console.table([chalk.yellow('Departments')], await s.pullDepartments())
+    console.table([chalk.yellow('Department ID'), chalk.yellow('Departments')], await s.pullDepartments())
     return await pressAnyKey('Please press any key to continue\n')
 }
 
 async function viewRoles() {
-    console.table([chalk.blueBright('Role'), chalk.green('Salary'), chalk.yellow('Departments')], await s.pullRoles())
+    console.table([chalk.blueBright('Role'), chalk.blueBright('Role ID'), chalk.yellow('Department'), chalk.green('Salary'), chalk.yellow('Departments')], await s.pullRoles())
     return await pressAnyKey('Please press any key to continue\n')
 }
 
