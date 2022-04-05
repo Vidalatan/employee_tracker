@@ -1,10 +1,11 @@
 require('dotenv').config();
-const chalk = require('chalk')
 const promptManager = require('./utils/promptManager')
 
+// Initialization function that acts as an initial handler
 async function init() {
-    const _ = await promptManager.introHolder();
+    const _ = await promptManager.introHolder();  // Prints banner and holds user
     while (true) {
+        // Prompt options and then switch to specific promp sequence
         let option = await promptManager.menuOptions();
         console.clear()
         switch (option) {
@@ -41,4 +42,4 @@ async function init() {
         }
     }
 }
-init()
+init()  // Start the application
