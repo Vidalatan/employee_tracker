@@ -20,9 +20,14 @@ async function sendQuery(fileName, options=null) {
                 .replace('$<DEPARTMENT_ID>', options['department_id'])
                 );
                 return rows
-            case 'department':
-                
-                break;
+            case 'add_employee':
+                [rows, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`)
+                .replace('$<FIRSTNAME>', options['first_name'])
+                .replace('$<LASTNAME>', options['last_name'])
+                .replace('$<ROLE_ID>', options['role_id'])
+                .replace('$<MANAGERNAME>', options['manager_name'])
+                );
+                return rows
             case 'department':
                 
                 break;
@@ -75,4 +80,8 @@ async function addRole(title, salary, department_id) {
     const data = await sendQuery('addRole', {'type': 'add_role', 'title': title, 'salary': salary, 'department_id': department_id})
 }
 
-module.exports = {pullDepartments, pullRoles, pullEmployees, addDepartment, addRole}
+async function addEmployee(first_name, last_name, role_id, manager_name=null) {
+    const data = await sendQuery('addEmployee', {'type': 'add_employee', 'first_name': first_name, 'last_name': last_name, 'role_id': role_id, 'manager_name': manager_name})
+}
+
+module.exports = {pullDepartments, pullRoles, pullEmployees, addDepartment, addRole, addEmployee}

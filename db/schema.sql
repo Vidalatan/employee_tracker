@@ -25,7 +25,6 @@ CREATE TABLE employees (
     first_name VARCHAR(30) NOT NULL,
     last_name VARCHAR(30) NOT NULL,
     role_id INT NOT NULL,
-    direct_manager_id INT,
     direct_manager_name VARCHAR(60),
     FOREIGN KEY (role_id) REFERENCES roles(role_id)
 );

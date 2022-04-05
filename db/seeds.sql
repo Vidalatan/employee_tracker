@@ -26,11 +26,11 @@ VALUES
 ('Sanitation Specialist', 30000, 5);
 
 -- Insert some preset employees
-INSERT INTO employees (first_name, last_name, role_id, direct_manager_id, direct_manager_name)
+INSERT INTO employees (first_name, last_name, role_id, direct_manager_name)
 VALUES
-('Gregory', 'Thomas', 1, NULL, NULL),
-('David', 'White', 2, 1, 'Gregory Thomas'),
-('Emily', 'Franco', 3, 2, 'David White'),
-('Joan', 'House', 4, 3, 'Emily Franco'),
-('Sheryl', 'Blanco', 4, 3, 'Emily Franco'),
-('Alejandro', 'Salazer', 4, 3, 'Emily Franco');
+('Gregory', 'Thomas', 1, NULL),
+('David', 'White', 2, 'Gregory Thomas'),
+('Emily', 'Franco', 3, 'David White'),
+('Joan', 'House', 4, 'Emily Franco'),
+('Sheryl', 'Blanco', 4, 'Emily Franco'),
+('Alejandro', 'Salazer', 4, 'Emily Franco');

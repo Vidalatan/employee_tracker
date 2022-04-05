@@ -109,7 +109,49 @@ async function addRole() {
 }
 
 async function addEmployee() {
-
+    const roles = await s.pullRoles()
+    const {first_name, last_name, role_id} = await inquirer.prompt([
+        {
+            type: 'input',
+            name: 'first_name',
+            message: 'What is the new employee\'s first name? '
+        },
+        {
+            type: 'input',
+            name: 'last_name',
+            message: '...last name? '
+        },
+        {
+            type: 'list',
+            name: 'role_id',
+            message: 'What role does this employee have? ',
+            choices: () => {
+                let temp = []
+                for (item of roles) { temp.push({value: item[1], name: item[0]}) }
+                return temp;
+            }
+        }
+    ])
+    const {hasManager} = await inquirer.prompt({
+        type: 'confirm',
+        name: 'hasManager',
+        message: 'Does this employee have a manager? '
+    })
+    if (hasManager) {
+        const employees = await s.pullEmployees()
+        const {manager_name} = await inquirer.prompt({
+            type: 'input',
+            name: 'manager_name',
+            message: 'Please select one of the employees below:',
+            choices: () => {
+                let temp = []
+                for (item of employees) { temp.push(`${item[1]} ${item[2]}`) }
+                return temp;
+            }
+        })
+        await s.addEmployee(first_name, last_name, role_id, manager_name);
+    } else { await s.addEmployee(first_name, last_name, role_id); }
+    (await willRedisplay('Employee')) && await viewEmployees()
 }
 
 async function updateEmployee() {
