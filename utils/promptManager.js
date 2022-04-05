@@ -21,6 +21,7 @@ async function menuOptions() {
         [
             {value: 'view', name: 'View'},
             {value: 'add', name: 'Add'},
+            {value: 'del', name: 'Delete'},
             {value: 'uemp', name: 'Update Employee'}
         ]
     })
@@ -29,6 +30,8 @@ async function menuOptions() {
             return await selectView()
         case 'add':
             return await selectAdd()
+        case 'del':
+            return await selectDel()
         case 'uemp':
             return 'uemp'
     }
@@ -60,6 +63,21 @@ async function selectAdd() {
             {value: 'adep', name: 'Add Department'},
             {value: 'arol', name: 'Add Role'},
             {value: 'aemp', name: 'Add Employee'},
+        ]
+    })
+    return option
+}
+
+async function selectDel() {
+    const {option} = await inquirer.prompt({
+        type: 'list',
+        name: 'option',
+        message: 'What would you like to Delete? ',
+        choices: 
+        [
+            {value: 'ddep', name: 'Delete Department'},
+            {value: 'drol', name: 'Delete Role'},
+            {value: 'demp', name: 'Delete Employee'},
         ]
     })
     return option
@@ -191,6 +209,41 @@ async function addEmployee() {
     console.clear();
 }
 
+async function delDepartment() {
+    
+}
+
+async function delRole() {
+
+}
+
+async function delEmployee() {
+    const employees = await sql.pullEmployees()
+    const {employee} = await inquirer.prompt({
+        type: 'list',
+        name: 'employee',
+        message: 'Please select one of the employees below:',
+        choices: () => {
+            let temp = []
+            for (item of employees) {
+                temp.push( {name: `${item[1]} ${item[2]} ${chalk.red('| '+item[3])}`, value: JSON.stringify({'emp_id':item[0], 'employee_name': `${item[1]} ${item[2]}`})} )
+            }
+            return temp;
+        }
+    })
+    const {emp_id, employee_name} = JSON.parse(employee)
+    const {willDelete} = await inquirer.prompt({
+        type: 'confirm',
+        name: 'willDelete',
+        message: `Are you sure you wish to delete ${employee_name}? (This is permanent) `
+    })
+    if (willDelete) {
+        await sql.delEmployee(emp_id)
+    }
+    (await willRedisplay('Employee')) && await viewEmployees()
+    console.clear();
+}
+
 async function updateEmployee() {
     const employees = await sql.pullEmployees()
     const {employee, options} = await inquirer.prompt([
@@ -256,4 +309,11 @@ async function updateEmpManager(employees, exclude) {
     return new_manager
 }
 
-module.exports = {introHolder, menuOptions, viewDepartments, viewRoles, viewEmployees, addDepartment, addRole, addEmployee, updateEmployee}
+module.exports = 
+{
+    introHolder, menuOptions, 
+    viewDepartments, viewRoles, viewEmployees, 
+    addDepartment, addRole, addEmployee, 
+    delDepartment, delRole, delEmployee,
+    updateEmployee
+}

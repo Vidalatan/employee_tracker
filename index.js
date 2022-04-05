@@ -26,6 +26,15 @@ async function init() {
             case 'aemp':
                 await promptManager.addEmployee()
                 break;
+            case 'ddep':
+                await promptManager.delDepartment()
+                break;
+            case 'drol':
+                await promptManager.delRole()
+                break;
+            case 'demp':
+                await promptManager.delEmployee()
+                break;
             case 'uemp':
                 await promptManager.updateEmployee()
                 break;

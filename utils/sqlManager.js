@@ -8,28 +8,33 @@ function readSQL(filePath) {
 
 async function sendQuery(fileName, options=null) {
     if (options) {
-        let rows, fields;
+        let data, fields;
         switch (options['type']) {
             case 'add_department':
-                [rows, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`).replace('$<DEPARTMENT>', options['department_name']));
-                return rows
+                [data, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`).replace('$<DEPARTMENT>', options['department_name']));
+                return data
             case 'add_role':
-                [rows, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`)
+                [data, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`)
                 .replace('$<TITLE>', options['title'])
                 .replace('$<SALARY>', options['salary'])
                 .replace('$<DEPARTMENT_ID>', options['department_id'])
                 );
-                return rows
+                return data
             case 'add_employee':
-                [rows, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`)
+                [data, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`)
                 .replace('$<FIRSTNAME>', options['first_name'])
                 .replace('$<LASTNAME>', options['last_name'])
                 .replace('$<ROLE_ID>', options['role_id'])
                 .replace(options['manager_name'] ? '$<MANAGERNAME>' : `'$<MANAGERNAME>'`, options['manager_name'])
                 );
-                return rows
+                return data
+            case 'del_employee':
+                [data, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`)
+                .replace('$<EMP_ID>', options['emp_id'])
+                );
+                return data
             case 'update_employee':
-                [rows, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`)
+                [data, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`)
                 .replace('$<EMP_ID>', options['emp_id'])
                 .replace('$<ROLE_ID>', options['role_id'])
                 .replace(options['manager_name'] ? '$<MANAGERNAME>' : `'$<MANAGERNAME>'`, options['manager_name'])
@@ -37,8 +42,8 @@ async function sendQuery(fileName, options=null) {
 
         }
     } else {
-        let [rows, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`));
-        return rows
+        let [data, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`));
+        return data
     }
 }
 
@@ -87,8 +92,25 @@ async function addEmployee(first_name, last_name, role_id, manager_name=null) {
     const data = await sendQuery('addEmployee', {'type': 'add_employee', 'first_name': first_name, 'last_name': last_name, 'role_id': role_id, 'manager_name': manager_name})
 }
 
+async function delDepartment() {
+    // const data = await sendQuery('delDepartment', {'type': 'del_department', %})
+}
+
+async function delRole() {
+    // const data = await sendQuery('delRole', {'type': 'del_role', %})
+}
+
+async function delEmployee(emp_id) {
+    const data = await sendQuery('delEmployee', {'type': 'del_employee', 'emp_id': emp_id})
+}
+
 async function updateEmployee(emp_id, role_id, manager_name) {
     const data = await sendQuery('updateEmployee', {'type': 'update_employee', 'emp_id': emp_id, 'role_id': role_id, 'manager_name': manager_name})
 }
 
-module.exports = {pullDepartments, pullRoles, pullEmployees, addDepartment, addRole, addEmployee, updateEmployee}
+module.exports = 
+{
+    pullDepartments, pullRoles, pullEmployees, 
+    addDepartment, addRole, addEmployee, 
+    delDepartment, delRole, delEmployee,
+    updateEmployee}
