@@ -1,6 +1,8 @@
 const inquirer = require('inquirer');
-const chalk = require('chalk')
-const pressAnyKey = require('press-any-key')
+const chalk = require('chalk');
+const pressAnyKey = require('press-any-key');
+const cTable = require('console.table');
+const s = require('./sqlManager')
 
 async function introHolder() {
     console.log(chalk.green(
@@ -29,26 +31,42 @@ async function menuOptions() {
     return option
 }
 
+function chalkView(view) {
+    console.log(chalk.green(`Displaying ${view} below:\n============================================`));
+}
+
 async function viewDepartments() {
-    
+    chalkView('Departments')
+    console.table(s.pullDepartments())
+    return await pressAnyKey('Please press any key to continue')
 }
+
 async function viewRoles() {
-
+    chalkView('Roles')
+    console.table(s.pullRoles())
+    return await pressAnyKey('Please press any key to continue')
 }
+
 async function viewEmployees() {
-
+    chalkView('Employees')
+    console.table(s.pullEmployees())
+    return await pressAnyKey('Please press any key to continue')
 }
+
 async function addDepartment() {
 
 }
+
 async function addRole() {
 
 }
+
 async function addEmployee() {
 
 }
+
 async function updateEmployee() {
 
 }
 
-module.exports = {introHolder, menuOptions, menuHolder}
+module.exports = {introHolder, menuOptions, viewDepartments, viewRoles, viewEmployees, addDepartment, addRole, addEmployee, updateEmployee}

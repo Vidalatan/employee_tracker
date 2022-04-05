@@ -1,9 +1,6 @@
 require('dotenv').config();
-const mysql = require('mysql2');
-const cTable = require('console.table');
 const chalk = require('chalk')
 const promptManager = require('./utils/promptManager')
-const {readSQL} = require('./utils/prepareSQL')
 
 async function init() {
     const clear = console.clear
@@ -15,24 +12,24 @@ async function init() {
         clear();
         switch (option) {
             case 'vdep':
-                promptManager.viewDepartments()
+                await promptManager.viewDepartments();
                 break;
-            case :
+            case 'vrol':
+                await promptManager.viewRoles();
+                break;
+            case 'vemp':
+                await promptManager.viewEmployees()
+                break;
+            case 'adep':
                 
                 break;
-            case :
+            case 'arol':
                 
                 break;
-            case :
+            case 'aemp':
                 
                 break;
-            case :
-                
-                break;
-            case :
-                
-                break;
-            case :
+            case 'uemp':
                 
                 break;
         }

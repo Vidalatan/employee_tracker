@@ -1,36 +1,26 @@
--- Start database for app
 DROP DATABASE IF EXISTS employee_trackerapp_db;
 CREATE DATABASE IF NOT EXISTS employee_trackerapp_db;
 
 USE employee_trackerapp_db;
 
--- Create Departments table
 CREATE TABLE departments (
-    dept_id INT NOT NULL AUTO_INCREMENt,
-    department_cat VARCHAR(20) NOT NULL,
-    PRIMARY KEY (dept_id)
+    dept_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    department_cat VARCHAR(20) NOT NULL
 );
 
--- Create Roles table
 CREATE TABLE roles (
-    role_id INT NOT NULL AUTO_INCREMENT,
+    role_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(20) NOT NULL,
     salary INT NOT NULL,
-    dept_id INT NOT NULL,
-    PRIMARY KEY (role_id),
-    FOREIGN KEY (dept_id) REFRENCES departments(dept_id)
+    dept_id INT NOT NULL
 );
 
--- Create Employees table
 CREATE TABLE employees (
-    emp_id INT NOT NULL AUTO_INCREMENT,
+    emp_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(30) NOT NULL,
     last_name VARCHAR(30) NOT NULL,
     role_id INT NOT NULL,
     dept_id INT NOT NULL,
     current_salary INT NOT NULL,
     direct_manager VARCHAR(20)
-    PRIMARY KEY (emp_id),
-    FOREIGN KEY (dept_id) REFRENCES departments(dept_id),
-    FOREIGN KEY (role_id) REFRENCES roles(role_id)
 );
