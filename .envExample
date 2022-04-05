@@ -1,8 +1,0 @@
-#Enter your db host here
-DB_HOST='localhost'
-
-#Enter your username here
-DB_USER='root'
-
-#Enter your db password here
-DB_PASSWORD='password'

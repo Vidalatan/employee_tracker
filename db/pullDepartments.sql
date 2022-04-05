@@ -1,2 +1,1 @@
-USE employee_trackerapp_db;
-SELECT * FROM departments;
+SELECT department_name FROM departments;

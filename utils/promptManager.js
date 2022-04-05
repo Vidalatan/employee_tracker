@@ -9,7 +9,7 @@ async function introHolder() {
         '','=========================================\n',
         '| Welcome to the Employee Tracking App! |\n',
         '=========================================\n'));
-    return await pressAnyKey('Please press any key to start')
+    return await pressAnyKey('Please press any key to start\n')
 }
 
 async function menuOptions() {
@@ -31,26 +31,19 @@ async function menuOptions() {
     return option
 }
 
-function chalkView(view) {
-    console.log(chalk.green(`Displaying ${view} below:\n============================================`));
-}
-
 async function viewDepartments() {
-    chalkView('Departments')
-    console.table(s.pullDepartments())
-    return await pressAnyKey('Please press any key to continue')
+    console.table([chalk.green('Departments')], await s.pullDepartments())
+    return await pressAnyKey('Please press any key to continue\n')
 }
 
 async function viewRoles() {
-    chalkView('Roles')
-    console.table(s.pullRoles())
-    return await pressAnyKey('Please press any key to continue')
+    console.table(await s.pullRoles())
+    return await pressAnyKey('Please press any key to continue\n')
 }
 
 async function viewEmployees() {
-    chalkView('Employees')
-    console.table(s.pullEmployees())
-    return await pressAnyKey('Please press any key to continue')
+    console.table(await s.pullEmployees())
+    return await pressAnyKey('Please press any key to continue\n')
 }
 
 async function addDepartment() {

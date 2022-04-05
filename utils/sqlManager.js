@@ -6,11 +6,9 @@ function readSQL(filePath) {
     return statement
 }
 
-function sendQuery(fileName, expectsResults=false) {
-    let data;
-    db.query(readSQL(`./db/${fileName}.sql`), (err, results) => err ? 
-    console.error(err) : data=results)
-    return data
+async function sendQuery(fileName) {
+    let [rows, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`));
+    return rows
 }
 
 const db = mysql.createConnection(
@@ -18,6 +16,7 @@ const db = mysql.createConnection(
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
+      rowsAsArray: true,
       multipleStatements: true
     },
     console.log(`Connected to DB`)
@@ -31,15 +30,17 @@ db.connect(function(err) {
 })
 
 
-function pullDepartments() {
-    sendQuery('')
+async function pullDepartments() {
+    const data = await sendQuery('pullDepartments');
+    return data;
 }
 
-function pullRoles() {
-
+async function pullRoles() {
+    const data = await sendQuery('pullRoles');
+    return data;
 }
 
-function pullEmployees() {
+async function pullEmployees() {
 
 }
 

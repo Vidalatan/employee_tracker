@@ -4,7 +4,6 @@ const promptManager = require('./utils/promptManager')
 
 async function init() {
     const clear = console.clear
-
     const _ = await promptManager.introHolder();
     clear();
     while (true) {
@@ -35,5 +34,4 @@ async function init() {
         }
     }
 }
-
 init()
