@@ -1,5 +1,17 @@
 const mysql = require('mysql2');
-const fs = require('fs')
+const fs = require('fs');
+
+function readSQL(filePath) {
+    const statement = fs.readFileSync(filePath).toString()
+    return statement
+}
+
+function sendQuery(fileName, expectsResults=false) {
+    let data;
+    db.query(readSQL(`./db/${fileName}.sql`), (err, results) => err ? 
+    console.error(err) : data=results)
+    return data
+}
 
 const db = mysql.createConnection(
     {
@@ -13,18 +25,14 @@ const db = mysql.createConnection(
   
 db.connect(function(err) {
     err ? console.error(err) : (() => {
-        let preparedStatement = readSQL('./db/schema.sql')
-        db.query(preparedStatement, (err, result) => err && console.error(err))
+        sendQuery('schema');  // Creates the DB
+        sendQuery('seeds'); // Preset values to get the DB started
     })()
 })
 
-function readSQL(filePath) {
-    const statement = fs.readFileSync(filePath).toString()
-    return statement
-}
 
 function pullDepartments() {
-
+    sendQuery('')
 }
 
 function pullRoles() {
