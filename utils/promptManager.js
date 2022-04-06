@@ -395,7 +395,7 @@ async function updateEmpRole(current_role_name=null) {
     const roles = (await sql.pullRoles()).map(item => [item[0], item[1]])
     // ternary of two self executing functions... return conditional ? function : function
     // This determines what to do depending on if current_role_name has a value passed in or not
-    // Either returns the current role id, or the new role id
+    // Either returns the current role id, or the new role id  
     return current_role_name ? (() => {
         for (item of roles) {
             if (item[0] === current_role_name) { return item[1] }

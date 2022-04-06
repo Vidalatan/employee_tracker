@@ -2,18 +2,33 @@ const mysql = require('mysql2');
 const chalk = require('chalk');
 const fs = require('fs');
 
+/**
+ * Used to take the information from a file and turn it into a string
+ * @param {string} filePath 
+ * @returns String of the data in the file passed in
+ */
 function readSQL(filePath) {
     const statement = fs.readFileSync(filePath).toString()
     return statement
 }
 
+/**
+ * Acts as a handler for sql queries. Uses readSQL to get the data from the db
+ * directory, then turns it into a sql query and replaces parts with passed in 
+ * options depending on query
+ * @param {string} fileName 
+ * @param {object} options 
+ * @returns String of data from database
+ */
 async function sendQuery(fileName, options=null) {
     if (options) {
         let data, fields;
         switch (options['type']) {
+            // Executes addDepartment.sql and inserts given department name
             case 'add_department':
                 [data, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`).replace('$<DEPARTMENT>', options['department_name']));
                 return data
+            // Executes addRole.sql and inserts given title, salary, and department id
             case 'add_role':
                 [data, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`)
                 .replace('$<TITLE>', options['title'])
@@ -21,6 +36,7 @@ async function sendQuery(fileName, options=null) {
                 .replace('$<DEPARTMENT_ID>', options['department_id'])
                 );
                 return data
+            // Executes addEmployee.sql and inserts given first and last name, role id, and manager name
             case 'add_employee':
                 [data, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`)
                 .replace('$<FIRSTNAME>', options['first_name'])
@@ -29,6 +45,7 @@ async function sendQuery(fileName, options=null) {
                 .replace(options['manager_name'] ? '$<MANAGERNAME>' : `'$<MANAGERNAME>'`, options['manager_name'])
                 );
                 return data
+            // Executes delDepartment.sql and removes department using department id
             case 'del_department':
                 try {
                     [data, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`)
@@ -36,8 +53,10 @@ async function sendQuery(fileName, options=null) {
                     );
                     return data
                 } catch (error) {
+                    // Catch block executes if database cannot delete the role due to the foreign key
                     return null
                 }
+            // Executes delRole.sql and removes role using role id
             case 'del_role':
                 try {
                     [data, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`)
@@ -45,13 +64,16 @@ async function sendQuery(fileName, options=null) {
                     );
                     return data
                 } catch (error) {
+                    // Catch block executes if database cannot delete the role due to the foreign key
                     return null
                 }
+            // Executes delEmployee.sql and removes employee using employee id
             case 'del_employee':
                 [data, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`)
                 .replace('$<EMP_ID>', options['emp_id'])
                 );
                 return data
+            // Executes updateEmployee.sql and updates the role and/or manager
             case 'update_employee':
                 [data, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`)
                 .replace('$<EMP_ID>', options['emp_id'])
@@ -60,12 +82,13 @@ async function sendQuery(fileName, options=null) {
                 )
 
         }
-    } else {
+    } else {  // This is the catch all for regular queries that don't modify, but request data
         let [data, fields] = await db.promise().query(readSQL(`./db/${fileName}.sql`));
         return data
     }
 }
 
+// Create the connection
 const db = mysql.createConnection(
     {
       host: process.env.DB_HOST,
@@ -76,6 +99,7 @@ const db = mysql.createConnection(
     }
   );
   
+// connect to a database that is also created and seeded within the connection definition itself
 db.connect(function(err) {
     err ? console.error(err) : (() => {
         sendQuery('schema');  // Creates the DB
@@ -83,7 +107,7 @@ db.connect(function(err) {
     })()
 })
 
-
+// Bellow are all the functions that initiate sendQuery to execute one of the .sql files
 async function pullDepartments() {
     const data = await sendQuery('pullDepartments');
     return data;
